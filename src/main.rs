@@ -1,6 +1,7 @@
 use bio::io::fastq;
 use flate2::bufread;
 use std::{fs, str, io::BufReader, collections::HashMap, process};
+use serde::{Deserialize, Serialize};
 
 extern crate clap;
 use clap::{App, Arg};
@@ -16,6 +17,13 @@ fn get_fastq_reader(path: &String) -> Box<dyn (::std::io::Read)> {
     }
 }
 
+// define struct used for serializing the HashMap to json
+#[derive(Serialize, Deserialize)]
+struct Kmer {
+    bases: String,
+    count: i32,
+}
+
 fn main() {
     let matches = App::new("fastkmers")
         .author("https://github.com/angelovangel")
@@ -23,7 +31,7 @@ fn main() {
 
         .arg(Arg::with_name("kmer")
         .required(true)
-        .help("k-mer size, maximal value is 31")
+        .help("k-mer size, maximal value is 21")
         .takes_value(true)
         .long("kmer_size")
         .short("k"))
@@ -34,6 +42,14 @@ fn main() {
         .short("s")
         .takes_value(false)
         .help("display fastq file summary information at the end of the output"))
+        
+        .arg(Arg::with_name("json")
+        .conflicts_with("summary")
+        .required(false)
+        .long("json")
+        .short("j")
+        .takes_value(false)
+        .help("output data in json format"))
         
         .arg(Arg::with_name("INPUT")
         .help("Path to a fastq file")
@@ -47,7 +63,7 @@ fn main() {
     
     let k = matches.value_of("kmer").unwrap().trim().parse::<usize>().expect("k-mer length argument not valid!");
     
-    if k >= 32 {
+    if k >= 22 {
         println!("use k-mer size below the limit...");
         process::exit(0);
     }
@@ -71,6 +87,12 @@ fn main() {
             }
 
     }
+    if matches.is_present("json") {
+        let j = serde_json::to_string(&kmer_counts).unwrap();
+        println!("{}", j);
+        process::exit(0);
+    }
+
     for (key, value) in &kmer_counts {
         //let kmer_name = str::from_utf8(&key).unwrap();
         println!("{} \t {}", key, value)
@@ -83,7 +105,5 @@ fn main() {
         println!("{} \t {} \t {}", reads, kmers, unique_kmers);
         println!("---");
     }
-
-
     
 }
