@@ -1,3 +1,4 @@
+[![Rust](https://github.com/angelovangel/fastkmers/actions/workflows/rust.yml/badge.svg)](https://github.com/angelovangel/fastkmers/actions/workflows/rust.yml)
 
 # fastkmers
 
