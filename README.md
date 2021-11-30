@@ -10,7 +10,7 @@ This command line program takes a fastq file as input (can be `.gz` also) and ou
 
 ## Install
 
-I do not provide precompiled binaries here, but it is simple to compile and run:
+I provide precompiled binaries for linux only [here](https://github.com/angelovangel/fastkmers/releases/download/v0.1.0/fastkmers), but it is simple to compile and run:
 
 ```bash
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
@@ -21,12 +21,13 @@ cargo build --release
 
 ```
 
+The executable file `fastkmers` is now under `./target/release/`
 ## Usage
 
 
 ```bash
 
-# the binary is now under ./target/release/, run it like this:
+# run it like this:
 ./target/release/fastkmers -k 4 /path/to/fastq/file.fastq.gz
 
 # to get 4-mer counts and a summary

@@ -31,7 +31,7 @@ fn main() {
 
         .arg(Arg::with_name("kmer")
         .required(true)
-        .help("k-mer size, maximal value is 21")
+        .help("k-mer size, maximal value is 21 (required)")
         .takes_value(true)
         .long("kmer_size")
         .short("k"))
@@ -41,7 +41,7 @@ fn main() {
         .long("summary")
         .short("s")
         .takes_value(false)
-        .help("display fastq file summary information at the end of the output"))
+        .help("display fastq file summary information at the end of the output (optional)"))
         
         .arg(Arg::with_name("json")
         .conflicts_with("summary")
@@ -49,7 +49,14 @@ fn main() {
         .long("json")
         .short("j")
         .takes_value(false)
-        .help("output data in json format"))
+        .help("output data in json format (optional)"))
+        
+        .arg(Arg::with_name("freq")
+        .long("freq")
+        .short("f")
+        .required(false)
+        .takes_value(false)
+        .help("Output a frequency table of multiplicity versus number of occurence, for building k-mer spectra, see https://en.wikipedia.org/wiki/K-mer (optional)"))
         
         .arg(Arg::with_name("INPUT")
         .help("Path to a fastq file")
@@ -93,9 +100,27 @@ fn main() {
         process::exit(0);
     }
 
+    if matches.is_present("freq") {
+        
+        let values: Vec<i32> = kmer_counts.values().cloned().collect(); // get counts from main hash table
+        let mut freq_hash: HashMap<i32, i32> = HashMap::new();
+        println!("occ\tcount");
+
+        for i in values {
+            
+            *freq_hash.entry(i).or_insert(0) += 1;
+        }
+        
+        for (key, value) in &freq_hash {
+            println!("{}\t{}", key, value)
+        }
+        process::exit(0);
+    }
+
+    println!("kmer\tcount");
     for (key, value) in &kmer_counts {
         //let kmer_name = str::from_utf8(&key).unwrap();
-        println!("{} \t {}", key, value)
+        println!("{}\t{}", key, value)
     }
 
     if matches.is_present("summary") {
