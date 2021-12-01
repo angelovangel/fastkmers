@@ -2,11 +2,11 @@
 
 # fastkmers
 
-A simple program for getting k-mer counts from a fastq file, written in Rust.
+A simple program for getting k-mer counts from a fastq/fasta file, written in Rust.
 
 ## Description
 
-This command line program takes a fastq file as input (can be `.gz` also) and outputs the counts of [k-mers](https://en.wikipedia.org/wiki/K-mer) of a specified length. It is implemented using hash table and a simple algortihm but is still reasonably fast. The maximum supported k-mer size is 21.
+This command line program takes a fastq/fasta file as input and outputs the counts of [k-mers](https://en.wikipedia.org/wiki/K-mer) of a specified length. It is implemented using hash tables and a simple algortihm but is still reasonably fast. The maximum supported k-mer size is 21.
 
 ## Install
 
@@ -26,15 +26,16 @@ The executable file `fastkmers` is now under `./target/release/`
 
 
 ```bash
+# Make sure the executable is in your path
+# check available options
 
-# run it like this:
-./target/release/fastkmers -k 4 /path/to/fastq/file.fastq.gz
+fastkmers -h
 
 # to get 4-mer counts and a summary
 fastkmers -k 4 -s file.fastq.gz
 
-# output json
-fastkmers -k 4 -j file.fastq.gz
+# output json, input fasta
+fastkmers -k 4 -a -j file.fasta
 
 ```
 

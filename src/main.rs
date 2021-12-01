@@ -1,10 +1,12 @@
-use bio::io::fastq;
+use bio::io::{fastq, fasta};
 use flate2::bufread;
 use std::{fs, str, io::BufReader, collections::HashMap, process};
 use serde::{Deserialize, Serialize};
 
 extern crate clap;
 use clap::{App, Arg};
+
+
 // own functions
 // fastq reader, file as arg, decide based on extension
 fn get_fastq_reader(path: &String) -> Box<dyn (::std::io::Read)> {
@@ -27,7 +29,7 @@ struct Kmer {
 fn main() {
     let matches = App::new("fastkmers")
         .author("https://github.com/angelovangel")
-        .about("get k-mer counts from a fastq file")
+        .about("get k-mer counts and multiplicity frequency from a fastq file")
 
         .arg(Arg::with_name("kmer")
         .required(true)
@@ -41,7 +43,14 @@ fn main() {
         .long("summary")
         .short("s")
         .takes_value(false)
-        .help("display fastq file summary information at the end of the output (optional)"))
+        .help("display fastq file summary information at the end of the output (optional)")).
+        
+        arg(Arg::with_name("fasta")
+        .required(false)
+        .long("fasta")
+        .short("a")
+        .takes_value(false)
+        .help("input is fasta file (default is fastq)"))
         
         .arg(Arg::with_name("json")
         .conflicts_with("summary")
@@ -56,15 +65,15 @@ fn main() {
         .short("f")
         .required(false)
         .takes_value(false)
-        .help("Output a frequency table of multiplicity versus number of occurence, for building k-mer spectra, see https://en.wikipedia.org/wiki/K-mer (optional)"))
+        .help("Output a frequency table (multiplicity versus occurence), for building k-mer spectra, see https://en.wikipedia.org/wiki/K-mer (optional)"))
         
         .arg(Arg::with_name("INPUT")
-        .help("Path to a fastq file")
+        .help("Path to a fastq/fasta file")
         .required(true)
         .index(1)).get_matches();
 
     let infile = matches.value_of("INPUT").unwrap().to_string();
-    let reader = fastq::Reader::new(get_fastq_reader(&infile));
+    // fastq or fasta
     //let mut record = fastq::Record::new();
     let mut kmer_counts: HashMap<String,i32> = HashMap::new();
     
@@ -77,6 +86,9 @@ fn main() {
     
     let mut reads: i64 = 0;
     let mut kmers: i64 = 0;
+    
+    if matches.is_present("fasta") {
+    let reader = fasta::Reader::new(get_fastq_reader(&infile));
 
     for result in reader.records(){
         reads += 1;
@@ -94,6 +106,26 @@ fn main() {
             }
 
     }
+} else {
+    let reader = fastq::Reader::new(get_fastq_reader(&infile));
+
+    for result in reader.records(){
+        reads += 1;
+
+        let record = result.expect("Error");
+        let seq = record.seq();
+        let seq_str = str::from_utf8(seq).unwrap().to_string();
+        //println!("{:?}", seq);
+        for c in 0..seq_str.len() - k + 1 {
+            let subseq = &seq_str[c..c + k];
+            
+            kmers += subseq.len() as i64;
+        
+            *kmer_counts.entry(subseq.to_string() ).or_insert(0) += 1;
+            }
+    }
+}
+
     if matches.is_present("json") {
         let j = serde_json::to_string(&kmer_counts).unwrap();
         println!("{}", j);
@@ -126,8 +158,8 @@ fn main() {
     if matches.is_present("summary") {
         let unique_kmers = kmer_counts.len();
         println!("---");
-        println!("reads \t total_k-mers \t unique_k-mers");
-        println!("{} \t {} \t {}", reads, kmers, unique_kmers);
+        println!("reads\ttotal_k-mers\tunique_k-mers");
+        println!("{}\t{}\t{}", reads, kmers, unique_kmers);
         println!("---");
     }
     

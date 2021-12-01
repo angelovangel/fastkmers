@@ -4,7 +4,7 @@ use std::process::Command; // Run programs
 
 
 #[test]
-fn test_kmer_output() -> Result<(), Box<dyn std::error::Error>> {
+fn test_kmer_fastq() -> Result<(), Box<dyn std::error::Error>> {
 
     let mut cmd = Command::cargo_bin("fastkmers")?;
     cmd.arg("-k 3").arg("tests/test.fastq");
@@ -17,7 +17,21 @@ fn test_kmer_output() -> Result<(), Box<dyn std::error::Error>> {
 }
 
 #[test]
-fn test_freq_output() -> Result<(), Box<dyn std::error::Error>> {
+fn test_kmer_fasta() -> Result<(), Box<dyn std::error::Error>> {
+
+    let mut cmd = Command::cargo_bin("fastkmers")?;
+    cmd.arg("-k 3").arg("--fasta").arg("tests/test.fasta");
+
+    cmd.assert()
+        .success()
+        .stdout(predicate::str::contains("ATC\t10"));
+
+    Ok(())
+}
+
+
+#[test]
+fn test_freq() -> Result<(), Box<dyn std::error::Error>> {
 
     let mut cmd = Command::cargo_bin("fastkmers")?;
     
