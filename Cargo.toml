@@ -1,6 +1,6 @@
 [package]
 name = "fastkmers"
-version = "0.1.0"
+version = "0.1.1"
 authors = ["Angel Angelov <aangeloo@gmail.com>"]
 repository = "https://github.com/angelovangel/fastkmers"
 
@@ -12,7 +12,6 @@ edition = "2021"
 bio = "*"
 flate2 = "1.0.18"
 clap = "~2.33.3"
-serde = { version = "1.0.118", features = ["derive"] }
 serde_json = "*"
 
 [dev-dependencies]

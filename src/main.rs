@@ -1,7 +1,6 @@
 use bio::io::{fastq, fasta};
 use flate2::bufread;
 use std::{fs, str, io::BufReader, collections::HashMap, process};
-use serde::{Deserialize, Serialize};
 
 extern crate clap;
 use clap::{App, Arg};
@@ -17,13 +16,6 @@ fn get_fastq_reader(path: &String) -> Box<dyn (::std::io::Read)> {
         let f = fs::File::open(path).unwrap();
         Box::new(BufReader::new(f))
     }
-}
-
-// define struct used for serializing the HashMap to json
-#[derive(Serialize, Deserialize)]
-struct Kmer {
-    bases: String,
-    count: i32,
 }
 
 fn main() {
