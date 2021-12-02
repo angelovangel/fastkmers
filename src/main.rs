@@ -71,7 +71,7 @@ fn main() {
     
     let k = matches.value_of("kmer").unwrap().trim().parse::<usize>().expect("k-mer length argument not valid!");
     
-    if k >= 22 {
+    if k >= 32 {
         println!("use k-mer size below the limit...");
         process::exit(0);
     }

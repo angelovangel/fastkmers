@@ -6,7 +6,7 @@ A simple program for getting k-mer counts from a fastq/fasta file, written in Ru
 
 ## Description
 
-This command line program takes a fastq/fasta file as input and outputs the counts of [k-mers](https://en.wikipedia.org/wiki/K-mer) of a specified length. It is implemented using hash tables and a simple algortihm but is still reasonably fast. The maximum supported k-mer size is 21.
+This command line program takes a fastq/fasta file as input and outputs the counts of [k-mers](https://en.wikipedia.org/wiki/K-mer) of a specified length. It is implemented using hash tables and a simple algortihm but is still reasonably fast. The maximum supported k-mer size is 31.
 
 ## Install
 
@@ -40,3 +40,13 @@ fastkmers -k 4 -a -j file.fasta
 ```
 
 The k-mer counts are printed to `stdout` as a tab-separated table or as `json`.
+
+## Speed
+
+I haven't compared to other programs (e.g. `jellyfish`), below are some measurements of the execution time for different k-mer sizes of the E. coli MG1655 genome, performed on a MacBook Pro 2018 (Intel i5 and 8 Gb RAM).
+
+```bash
+hyperfine -r 4 --warmup 1 --export-csv hyperfine-kmer-size.csv -P kmer 4 29 'fastkmers -k {kmer} -a mg1655.fasta'
+```
+
+![img](img/runtime.png)
