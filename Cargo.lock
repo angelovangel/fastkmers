@@ -298,6 +298,7 @@ dependencies = [
  "clap",
  "flate2",
  "predicates",
+ "regex",
  "serde_json",
 ]
 

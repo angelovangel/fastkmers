@@ -1,6 +1,7 @@
 use bio::io::{fastq, fasta};
 use flate2::bufread;
 use std::{fs, str, io::BufReader, collections::HashMap, process};
+use regex::Regex;
 
 extern crate clap;
 use clap::{App, Arg};
@@ -52,12 +53,21 @@ fn main() {
         .takes_value(false)
         .help("output data in json format (optional)"))
         
+        .arg(Arg::with_name("query")
+        .long("query")
+        .short("q")
+        .conflicts_with("summary")
+        .conflicts_with("freq")
+        .required(false)
+        .takes_value(true)
+        .help("Output counts for a k-mer sequence passed as query on the command line. Works with regex too!"))
+        
         .arg(Arg::with_name("freq")
         .long("freq")
         .short("f")
         .required(false)
         .takes_value(false)
-        .help("Output a frequency table (multiplicity versus occurence), for building k-mer spectra, see https://en.wikipedia.org/wiki/K-mer (optional)"))
+        .help("Output a histogram of k-mer occurence, for building k-mer spectra, see https://en.wikipedia.org/wiki/K-mer (optional)"))
         
         .arg(Arg::with_name("INPUT")
         .help("Path to a fastq/fasta file")
@@ -120,6 +130,19 @@ fn main() {
     if matches.is_present("json") {
         let j = serde_json::to_string(&kmer_counts).unwrap();
         println!("{}", j);
+        process::exit(0);
+    }
+
+    if matches.is_present("query") {
+        let string = matches.value_of("query").unwrap().trim();
+        let re = Regex::new(string).expect("Failed to construct regex from string!");
+        println!("kmer\tcount");
+        
+        for (key, value) in kmer_counts {
+            if re.is_match(&key) {
+                println!("{}\t{}", key, value)
+            }
+        }
         process::exit(0);
     }
 

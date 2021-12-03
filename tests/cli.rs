@@ -39,5 +39,16 @@ fn test_freq() -> Result<(), Box<dyn std::error::Error>> {
     cmd.assert().success().stdout(predicate::str::contains("10\t5"));
 
     Ok(())
+}
+
+#[test]
+fn test_regex() -> Result<(), Box<dyn std::error::Error>> {
+
+    let mut cmd = Command::cargo_bin("fastkmers")?;
+    
+    cmd.arg("-k 5").arg("-q").arg("A[T|G]A$").arg("tests/test.fastq");
+    cmd.assert().success().stdout(predicate::str::contains("AAAGA\t3"));
+
+    Ok(())
 
 }
