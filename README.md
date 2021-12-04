@@ -41,7 +41,7 @@ fastkmers -k 4 -a -j file.fasta
 fastkmers -k 5 -q "AATTG" file.fastq.gz
 
 # query with regex is also supported
-# this example would match k-mers whose last 4 bases are: not T| A | T or G | A
+# this example would match all 5-mers whose last 4 bases are: not T| A | T or G | A
 fastkmers -k 5 -q "[^T]A[T|G]A$" file.fastq.gz
 
 ```

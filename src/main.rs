@@ -21,6 +21,7 @@ fn get_fastq_reader(path: &String) -> Box<dyn (::std::io::Read)> {
 
 fn main() {
     let matches = App::new("fastkmers")
+        .version("0.1.2")
         .author("https://github.com/angelovangel")
         .about("get k-mer counts and multiplicity frequency from a fastq file")
 
@@ -95,7 +96,7 @@ fn main() {
         for result in reader.records(){
             reads += 1;
 
-            let record = result.expect("Error");
+            let record = result.expect("Error reading records in file. Use '-a' if file is fasta");
             let seq = record.seq();
             let seq_str = str::from_utf8(seq).unwrap().to_string();
             //println!("{:?}", seq);
@@ -113,7 +114,7 @@ fn main() {
         for result in reader.records(){
             reads += 1;
 
-            let record = result.expect("Error");
+            let record = result.expect("Error reading records in file. Use '-a' if file is fasta.");
             let seq = record.seq();
             let seq_str = str::from_utf8(seq).unwrap().to_string();
             //println!("{:?}", seq);
