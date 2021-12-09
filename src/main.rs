@@ -12,7 +12,7 @@ use clap::{App, Arg};
 fn get_fastq_reader(path: &String) -> Box<dyn (::std::io::Read)> {
     if path.ends_with(".gz") {
         let f = fs::File::open(path).unwrap();
-        Box::new(bufread::MultiGzDecoder::new(BufReader::new(f)))
+        Box::new(bufread::MultiGzDecoder::new( BufReader::new(f)) )
     } else {
         let f = fs::File::open(path).unwrap();
         Box::new(BufReader::new(f))
@@ -27,7 +27,7 @@ fn main() {
 
         .arg(Arg::with_name("kmer")
         .required(true)
-        .help("k-mer size, maximal value is 21 (required)")
+        .help("k-mer size, maximal value is 31 (required)")
         .takes_value(true)
         .long("kmer_size")
         .short("k"))

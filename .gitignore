@@ -1,4 +1,4 @@
 /target
 hyperfine.sh 
 mg1655.fasta 
-x86_64-linux
+x86_64_linux*
