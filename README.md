@@ -10,7 +10,7 @@ This command line program takes a fastq/fasta file as input and outputs the coun
 
 ## Install
 
-I provide precompiled binaries for linux only [here](https://github.com/angelovangel/fastkmers/releases/download/v0.1.2/fastkmers), but it is simple to compile and run:
+I provide precompiled binaries for linux only [here](https://github.com/angelovangel/fastkmers/releases/download/v0.1.3/fastkmers), but it is simple to compile and run:
 
 ```bash
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
