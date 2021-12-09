@@ -35,7 +35,10 @@ fastkmers -h
 fastkmers -k 4 -s file.fastq.gz
 
 # output json, input fasta
-fastkmers -k 4 -a -j file.fasta
+fastkmers -k 4 -j file.fasta
+
+# stdin can also be used as input, use -
+cat file.fasta | fastkmers -k 4 -j -
 
 # query for a specific k-mer
 fastkmers -k 5 -q "AATTG" file.fastq.gz
