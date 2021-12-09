@@ -1,6 +1,6 @@
 [package]
 name = "fastkmers"
-version = "0.1.2"
+version = "0.1.3"
 authors = ["Angel Angelov <aangeloo@gmail.com>"]
 repository = "https://github.com/angelovangel/fastkmers"
 
@@ -9,12 +9,11 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-bio = "*"
-flate2 = "1.0.18"
 clap = "~2.33.3"
 serde_json = "*"
 regex = "1"
 probminhash = "0.1.5"
+kseq = "0.2.2"
 
 [dev-dependencies]
 assert_cmd = "0.10"

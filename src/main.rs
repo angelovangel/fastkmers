@@ -1,27 +1,14 @@
-use bio::io::{fastq, fasta};
-use flate2::bufread;
-use std::{fs, str, io::BufReader, collections::HashMap, process};
+use std::{collections::HashMap, process};
 use regex::Regex;
+use kseq::parse_path;
 
 extern crate clap;
 use clap::{App, Arg};
 
 
-// own functions
-// fastq reader, file as arg, decide based on extension
-fn get_fastq_reader(path: &String) -> Box<dyn (::std::io::Read)> {
-    if path.ends_with(".gz") {
-        let f = fs::File::open(path).unwrap();
-        Box::new(bufread::MultiGzDecoder::new( BufReader::new(f)) )
-    } else {
-        let f = fs::File::open(path).unwrap();
-        Box::new(BufReader::new(f))
-    }
-}
-
 fn main() {
     let matches = App::new("fastkmers")
-        .version("0.1.2")
+        .version("0.1.3")
         .author("https://github.com/angelovangel")
         .about("get k-mer counts and multiplicity frequency from a fastq file")
 
@@ -76,10 +63,7 @@ fn main() {
         .index(1)).get_matches();
 
     let infile = matches.value_of("INPUT").unwrap().to_string();
-    // fastq or fasta
-    //let mut record = fastq::Record::new();
     let mut kmer_counts: HashMap<String,i32> = HashMap::new();
-    
     let k = matches.value_of("kmer").unwrap().trim().parse::<usize>().expect("k-mer length argument not valid!");
     
     if k >= 32 {
@@ -90,44 +74,20 @@ fn main() {
     let mut reads: i64 = 0;
     let mut kmers: i64 = 0;
     
-    if matches.is_present("fasta") {
-        let reader = fasta::Reader::new(get_fastq_reader(&infile));
-
-        for result in reader.records(){
-            reads += 1;
-
-            let record = result.expect("Error reading records in file. Use '-a' if file is fasta");
-            let seq = record.seq();
-            let seq_str = str::from_utf8(seq).unwrap().to_string();
-            //println!("{:?}", seq);
-            for c in 0..seq_str.len() - k + 1 {
-                let subseq = &seq_str[c..c + k];
-            
-                kmers += subseq.len() as i64;
+    let mut records = parse_path(infile).unwrap();
+    while let Some(record) = records.iter_record().unwrap() {
+        reads += 1;
+        let seq_str = record.seq();
+        for c in 0..seq_str.len() - k + 1 {
+            let subseq = &seq_str[c..c + k];
         
-                *kmer_counts.entry(subseq.to_string() ).or_insert(0) += 1;
-            }
+            kmers += subseq.len() as i64;
+    
+            *kmer_counts.entry(subseq.to_string() ).or_insert(0) += 1;
         }
-    } else {
-        let reader = fastq::Reader::new(get_fastq_reader(&infile));
 
-        for result in reader.records(){
-            reads += 1;
-
-            let record = result.expect("Error reading records in file. Use '-a' if file is fasta.");
-            let seq = record.seq();
-            let seq_str = str::from_utf8(seq).unwrap().to_string();
-            //println!("{:?}", seq);
-            for c in 0..seq_str.len() - k + 1 {
-                let subseq = &seq_str[c..c + k];
-            
-                kmers += subseq.len() as i64;
-        
-                *kmer_counts.entry(subseq.to_string() ).or_insert(0) += 1;
-            }
-        }
     }
-
+    
     if matches.is_present("json") {
         let j = serde_json::to_string(&kmer_counts).unwrap();
         println!("{}", j);
