@@ -24,14 +24,14 @@ fn main() {
         .long("summary")
         .short("s")
         .takes_value(false)
-        .help("display fastq file summary information at the end of the output (optional)")).
-        
-        arg(Arg::with_name("fasta")
+        .help("display fastq file summary information at the end of the output (optional)"))
+
+        .arg(Arg::with_name("valid")
+        .long("valid")
+        .short("v")
         .required(false)
-        .long("fasta")
-        .short("a")
         .takes_value(false)
-        .help("input is fasta file (default is fastq)"))
+        .help("Remove k-mers with ambigous bases, e.g. only the ones containing ATGC are retained"))
         
         .arg(Arg::with_name("json")
         .conflicts_with("summary")
@@ -60,7 +60,9 @@ fn main() {
         .arg(Arg::with_name("INPUT")
         .help("Path to a fastq/fasta file")
         .required(true)
-        .index(1)).get_matches();
+        .index(1))
+        
+        .get_matches();
 
     let infile = matches.value_of("INPUT").unwrap().to_string();
     let mut kmer_counts: HashMap<String,i32> = HashMap::new();
@@ -80,10 +82,19 @@ fn main() {
         let seq_str = record.seq();
         for c in 0..seq_str.len() - k + 1 {
             let subseq = &seq_str[c..c + k];
-        
+            if matches.is_present("valid") {
+                if subseq.chars().all(|x| matches!(x, 'A'|'T'|'G'|'C'|'a'|'t'|'g'|'c') ) {
+
+                    kmers += subseq.len() as i64;
+                    *kmer_counts.entry(subseq.to_string() ).or_insert(0) += 1;
+
+                }
+            } else {
+
             kmers += subseq.len() as i64;
-    
             *kmer_counts.entry(subseq.to_string() ).or_insert(0) += 1;
+            
+            }
         }
 
     }
