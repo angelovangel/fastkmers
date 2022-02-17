@@ -2,3 +2,7 @@
 hyperfine.sh 
 mg1655.fasta 
 x86_64_linux*
+hyperfine-kmer-size.csv 
+hyperfine-kmer-size2.csv 
+hyperfine.sh
+.Rhistory

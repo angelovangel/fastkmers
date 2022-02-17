@@ -10,7 +10,7 @@ fn main() {
     let matches = App::new("fastkmers")
         .version("0.1.3")
         .author("https://github.com/angelovangel")
-        .about("get k-mer counts and multiplicity frequency from a fastq file")
+        .about("get k-mer counts and multiplicity frequency from a fastx file")
 
         .arg(Arg::with_name("kmer")
         .required(true)
@@ -68,10 +68,10 @@ fn main() {
     let mut kmer_counts: HashMap<String,i32> = HashMap::new();
     let k = matches.value_of("kmer").unwrap().trim().parse::<usize>().expect("k-mer length argument not valid!");
     
-    if k >= 32 {
-        println!("use k-mer size below the limit...");
-        process::exit(0);
-    }
+    // if k >= 32 {
+        // println!("use k-mer size below the limit...");
+        // process::exit(0);
+    // }
     
     let mut reads: i64 = 0;
     let mut kmers: i64 = 0;

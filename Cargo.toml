@@ -14,6 +14,7 @@ serde_json = "*"
 regex = "1"
 probminhash = "0.1.5"
 kseq = "0.2.2"
+itertools = "0.10.3"
 
 [dev-dependencies]
 assert_cmd = "0.10"
