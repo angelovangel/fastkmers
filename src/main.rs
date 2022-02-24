@@ -1,6 +1,7 @@
 use std::{collections::HashMap, process};
 use regex::Regex;
 use kseq::parse_path;
+use rayon::iter::{IntoParallelIterator, ParallelIterator};
 
 extern crate clap;
 use clap::{App, Arg};
@@ -113,22 +114,38 @@ fn main() {
 // then calculate base contents at each position
     if matches.is_present("cycle") {
         
-        println!("cycle\tgc\tat\tn");
+        //let mut b: Vec<char> = Vec::with_capacity(k);
+        println!("cycle\ta\tt\tg\tc\tn");
         
-        for i in 0..k {
-            let b:Vec<_> = kmer_counts
+       // for i in 0..k {
+       //     let b: Vec<char> = kmer_counts
+       //         .keys()
+       //         .map(|x| x.chars().nth(i).unwrap())
+       //         .collect();
+        (0..k).into_par_iter().for_each(|i| {
+            let b: Vec<char> = kmer_counts
                 .keys()
                 .map(|x| x.chars().nth(i).unwrap())
                 .collect();
-            let a: f32 = b.iter().filter(|&x| matches!(x, 'A'|'a')).count() as f32 / b.len() as f32;
-            let t: f32 = b.iter().filter(|&x| matches!(x, 'T'|'t')).count() as f32 / b.len() as f32;
-            let g: f32 = b.iter().filter(|&x| matches!(x, 'G' | 'g')).count() as f32 / b.len() as f32;
-            let c: f32 = b.iter().filter(|&x| matches!(x, 'C'|'c')).count() as f32 / b.len() as f32;
-            let n: f32 = b.iter().filter(|&x| matches!(x, 'N'|'n')).count() as f32 / b.len() as f32;
+
+                let a: f32 = b.iter().filter(|&x| matches!(x, 'A'|'a')).count() as f32 / b.len() as f32;
+                let t: f32 = b.iter().filter(|&x| matches!(x, 'T'|'t')).count() as f32 / b.len() as f32;
+                let g: f32 = b.iter().filter(|&x| matches!(x, 'G'|'g')).count() as f32 / b.len() as f32;
+                let c: f32 = b.iter().filter(|&x| matches!(x, 'C'|'c')).count() as f32 / b.len() as f32;
+                let n: f32 = b.iter().filter(|&x| matches!(x, 'N'|'n')).count() as f32 / b.len() as f32;
             
-            println!("{}\t{}\t{}\t{}\t{}\t{}", i+1, a, t, g, c, n);
+                println!("{}\t{}\t{}\t{}\t{}\t{}", i+1, a, t, g, c, n);
+        });
+
+           // let a: f32 = b.iter().filter(|&x| matches!(x, 'A'|'a')).count() as f32 / b.len() as f32;
+           // let t: f32 = b.iter().filter(|&x| matches!(x, 'T'|'t')).count() as f32 / b.len() as f32;
+           // let g: f32 = b.iter().filter(|&x| matches!(x, 'G'|'g')).count() as f32 / b.len() as f32;
+           // let c: f32 = b.iter().filter(|&x| matches!(x, 'C'|'c')).count() as f32 / b.len() as f32;
+           // let n: f32 = b.iter().filter(|&x| matches!(x, 'N'|'n')).count() as f32 / b.len() as f32;
+           // 
+           // println!("{}\t{}\t{}\t{}\t{}\t{}", i+1, a, t, g, c, n);
             //println!("{:?}", b.len());
-        }
+        
         
        
         //modules::cycle_vec(records);

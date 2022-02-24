@@ -6,8 +6,8 @@ A simple program for getting k-mer counts from a fastq/fasta file, written in Ru
 
 ## Description
 
-This command line program takes a fastq/fasta file as input and outputs the counts of [k-mers](https://en.wikipedia.org/wiki/K-mer) of a specified length. It is implemented using hash tables and a simple algortihm but is still reasonably fast. The maximum supported k-mer size is 31.
-
+This command line program takes a fastq/fasta file as input and outputs the counts of [k-mers](https://en.wikipedia.org/wiki/K-mer) of a specified length. It is implemented using hash tables and a simple algortihm but is still reasonably fast (mostly by using parallel computation with the [Rayon](https://github.com/rayon-rs/rayon) library). 
+It can also be used to get per cycle base content for Illumina reads, by setting the k-mer size to the cycle count.
 ## Install
 
 I provide precompiled binaries for linux only [here](https://github.com/angelovangel/fastkmers/releases/download/v0.1.3/fastkmers), but it is simple to compile and run:
@@ -46,6 +46,9 @@ fastkmers -k 5 -q "AATTG" file.fastq.gz
 # query with regex is also supported
 # this example would match all 5-mers whose last 4 bases are: not T| A | T or G | A
 fastkmers -k 5 -q "[^T]A[T|G]A$" file.fastq.gz
+
+# get base contents per cycle (the number of cycles has to be known beforehand)
+fastkmers -k 126 -c tests/test.fasta
 
 ```
 
