@@ -52,3 +52,13 @@ fn test_regex() -> Result<(), Box<dyn std::error::Error>> {
     Ok(())
 
 }
+
+#[test]
+fn test_cycle() -> Result<(), Box<dyn std::error::Error>> {
+    
+    let mut cmd = Command::cargo_bin("fastkmers")?;
+    cmd.arg("-k 126").arg("-c").arg("tests/test.fastq");
+    cmd.assert().success().stdout(predicate::str::contains("1\t0.5\t0.25\t0\t0.25\t0"));
+
+    Ok(())
+}

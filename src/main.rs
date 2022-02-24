@@ -5,16 +5,24 @@ use kseq::parse_path;
 extern crate clap;
 use clap::{App, Arg};
 
-
 fn main() {
     let matches = App::new("fastkmers")
         .version("0.1.3")
         .author("https://github.com/angelovangel")
         .about("get k-mer counts and multiplicity frequency from a fastx file")
 
+        .arg(Arg::with_name("cycle")
+        .required(false)
+        .takes_value(false)
+        .long("cycle")
+        .short("c")
+        //.conflicts_with("kmer")
+        .help("Print bases per cycle (optional). Number of cycles must be given with the -k argument Use only with Illumina data."))
+
         .arg(Arg::with_name("kmer")
+        //.default_value("0")
         .required(true)
-        .help("k-mer size, maximal value is 31 (required)")
+        .help("k-mer size")
         .takes_value(true)
         .long("kmer_size")
         .short("k"))
@@ -65,29 +73,33 @@ fn main() {
         .get_matches();
 
     let infile = matches.value_of("INPUT").unwrap().to_string();
+    let mut records = parse_path(infile).unwrap();
+
     let mut kmer_counts: HashMap<String,i32> = HashMap::new();
-    let k = matches.value_of("kmer").unwrap().trim().parse::<usize>().expect("k-mer length argument not valid!");
     
-    // if k >= 32 {
-        // println!("use k-mer size below the limit...");
-        // process::exit(0);
-    // }
+    
+    let k = matches.value_of("kmer")
+        .unwrap()
+        .trim()
+        .parse::<usize>()
+        .expect("k-mer length argument not valid!");
     
     let mut reads: i64 = 0;
     let mut kmers: i64 = 0;
     
-    let mut records = parse_path(infile).unwrap();
+    
     while let Some(record) = records.iter_record().unwrap() {
         reads += 1;
         let seq_str = record.seq();
+
         for c in 0..seq_str.len() - k + 1 {
             let subseq = &seq_str[c..c + k];
+
             if matches.is_present("valid") {
                 if subseq.chars().all(|x| matches!(x, 'A'|'T'|'G'|'C'|'a'|'t'|'g'|'c') ) {
 
                     kmers += subseq.len() as i64;
                     *kmer_counts.entry(subseq.to_string() ).or_insert(0) += 1;
-
                 }
             } else {
 
@@ -96,7 +108,31 @@ fn main() {
             
             }
         }
-
+    }
+// get per cycle content by first running the main function with k = cycles (to make sure the reads are aligned) 
+// then calculate base contents at each position
+    if matches.is_present("cycle") {
+        
+        println!("cycle\tgc\tat\tn");
+        
+        for i in 0..k {
+            let b:Vec<_> = kmer_counts
+                .keys()
+                .map(|x| x.chars().nth(i).unwrap())
+                .collect();
+            let a: f32 = b.iter().filter(|&x| matches!(x, 'A'|'a')).count() as f32 / b.len() as f32;
+            let t: f32 = b.iter().filter(|&x| matches!(x, 'T'|'t')).count() as f32 / b.len() as f32;
+            let g: f32 = b.iter().filter(|&x| matches!(x, 'G' | 'g')).count() as f32 / b.len() as f32;
+            let c: f32 = b.iter().filter(|&x| matches!(x, 'C'|'c')).count() as f32 / b.len() as f32;
+            let n: f32 = b.iter().filter(|&x| matches!(x, 'N'|'n')).count() as f32 / b.len() as f32;
+            
+            println!("{}\t{}\t{}\t{}\t{}\t{}", i+1, a, t, g, c, n);
+            //println!("{:?}", b.len());
+        }
+        
+       
+        //modules::cycle_vec(records);
+        process::exit(0);
     }
     
     if matches.is_present("json") {
@@ -135,16 +171,16 @@ fn main() {
         process::exit(0);
     }
 
-    println!("kmer\tcount");
-    for (key, value) in &kmer_counts {
-        //let kmer_name = str::from_utf8(&key).unwrap();
-        println!("{}\t{}", key, value)
-    }
+        println!("kmer\tcount");
+        for (key, value) in &kmer_counts {
+            //let kmer_name = str::from_utf8(&key).unwrap();
+            println!("{}\t{}", key, value)
+        }
 
     if matches.is_present("summary") {
         let unique_kmers = kmer_counts.len();
         println!("---");
-        println!("reads\ttotal_k-mers\tunique_k-mers");
+        println!("reads\ttotal_kmers\tunique_kmers");
         println!("{}\t{}\t{}", reads, kmers, unique_kmers);
         println!("---");
     }
