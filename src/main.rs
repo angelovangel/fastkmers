@@ -76,7 +76,7 @@ fn main() {
     let infile = matches.value_of("INPUT").unwrap().to_string();
     let mut records = parse_path(infile).unwrap();
 
-    let mut kmer_counts: HashMap<String,i32> = HashMap::new();
+    let  mut kmer_counts: HashMap<String,i32> = HashMap::new();
     
     
     let k = matches.value_of("kmer")
@@ -88,23 +88,22 @@ fn main() {
     let mut reads: i64 = 0;
     let mut kmers: i64 = 0;
     
-    
     while let Some(record) = records.iter_record().unwrap() {
         reads += 1;
         let seq_str = record.seq();
 
         for c in 0..seq_str.len() - k + 1 {
             let subseq = &seq_str[c..c + k];
-
+            
             if matches.is_present("valid") {
                 if subseq.chars().all(|x| matches!(x, 'A'|'T'|'G'|'C'|'a'|'t'|'g'|'c') ) {
-
-                    kmers += subseq.len() as i64;
+                    kmers += 1;
+                    //kmers += subseq.len() as i64;
                     *kmer_counts.entry(subseq.to_string() ).or_insert(0) += 1;
                 }
             } else {
-
-            kmers += subseq.len() as i64;
+            kmers += 1;
+            //kmers += subseq.len() as i64;
             *kmer_counts.entry(subseq.to_string() ).or_insert(0) += 1;
             
             }
@@ -117,11 +116,6 @@ fn main() {
         //let mut b: Vec<char> = Vec::with_capacity(k);
         println!("cycle\ta\tt\tg\tc\tn");
         
-       // for i in 0..k {
-       //     let b: Vec<char> = kmer_counts
-       //         .keys()
-       //         .map(|x| x.chars().nth(i).unwrap())
-       //         .collect();
         (0..k).into_par_iter().for_each(|i| {
             let b: Vec<char> = kmer_counts
                 .keys()
@@ -136,17 +130,6 @@ fn main() {
             
                 println!("{}\t{}\t{}\t{}\t{}\t{}", i+1, a, t, g, c, n);
         });
-
-           // let a: f32 = b.iter().filter(|&x| matches!(x, 'A'|'a')).count() as f32 / b.len() as f32;
-           // let t: f32 = b.iter().filter(|&x| matches!(x, 'T'|'t')).count() as f32 / b.len() as f32;
-           // let g: f32 = b.iter().filter(|&x| matches!(x, 'G'|'g')).count() as f32 / b.len() as f32;
-           // let c: f32 = b.iter().filter(|&x| matches!(x, 'C'|'c')).count() as f32 / b.len() as f32;
-           // let n: f32 = b.iter().filter(|&x| matches!(x, 'N'|'n')).count() as f32 / b.len() as f32;
-           // 
-           // println!("{}\t{}\t{}\t{}\t{}\t{}", i+1, a, t, g, c, n);
-            //println!("{:?}", b.len());
-        
-        
        
         //modules::cycle_vec(records);
         process::exit(0);
@@ -198,7 +181,7 @@ fn main() {
         let unique_kmers = kmer_counts.len();
         println!("---");
         println!("reads\ttotal_kmers\tunique_kmers");
-        println!("{}\t{}\t{}", reads, kmers, unique_kmers);
+        println!("{}\t{:?}\t{}", reads, kmers, unique_kmers);
         println!("---");
     }
     
