@@ -93,6 +93,11 @@ fn main() {
         reads += 1;
         let seq_str = record.seq();
         //let q_str = record.qual();
+        
+        // dont use the read if its length is < k + 1
+        if seq_str.len() < k + 1 {
+            continue;
+        }
 
         for c in 0..seq_str.len() - k + 1 {
             let subseq = &seq_str[c..c + k];
