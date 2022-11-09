@@ -24,7 +24,7 @@ fn test_kmer_fasta() -> Result<(), Box<dyn std::error::Error>> {
 
     cmd.assert()
         .success()
-        .stdout(predicate::str::contains("ATC\t10"));
+        .stdout(predicate::str::contains("ATC\t8"));
 
     Ok(())
 }
