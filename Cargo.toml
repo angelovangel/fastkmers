@@ -13,7 +13,7 @@ clap = "~2.33.3"
 serde_json = "*"
 regex = "1"
 probminhash = "0.1.5"
-kseq = "0.2.2"
+kseq = "0.5.2"
 itertools = "0.10.3"
 rayon = "1.5"
 

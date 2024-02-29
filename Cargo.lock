@@ -95,6 +95,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "cmake"
+version = "0.1.50"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a31c789563b815f77f4250caee12365734369f942439b7defd71e18a48197130"
+dependencies = [
+ "cc",
+]
+
+[[package]]
 name = "crc32fast"
 version = "1.2.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -293,12 +302,13 @@ checksum = "b71991ff56294aa922b450139ee08b3bfc70982c6b2c7562771375cf73542dd4"
 
 [[package]]
 name = "kseq"
-version = "0.2.6"
+version = "0.5.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c7f407c3335464d413bf46b240996b5eb4f2f9d2fe8e7e3d7a9235357647bea0"
+checksum = "c92f8d7f39cdfd249d7c29b3bf6499062d54ae8545c7b8dcb1bc4e14fb2da86f"
 dependencies = [
  "atty",
  "flate2",
+ "memchr",
 ]
 
 [[package]]
@@ -326,6 +336,8 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "de5435b8549c16d423ed0c03dbaafe57cf6c3344744f1242520d59c9d8ecec66"
 dependencies = [
  "cc",
+ "cmake",
+ "libc",
  "pkg-config",
  "vcpkg",
 ]
@@ -341,9 +353,9 @@ dependencies = [
 
 [[package]]
 name = "memchr"
-version = "2.4.1"
+version = "2.7.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "308cc39be01b73d0d18f82a0e7b2a3df85245f84af96fdddc5d202d27e47b86a"
+checksum = "523dc4f511e55ab87b694dc30d0f820d60906ef06413f93d4d7a1385599cc149"
 
 [[package]]
 name = "memoffset"
