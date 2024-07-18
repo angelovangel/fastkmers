@@ -16,7 +16,7 @@ fn main() {
         .required(false)
         .takes_value(false)
         .long("cycle")
-        .short("c")
+        .short('c')
         //.conflicts_with("kmer")
         .help("Print bases per cycle (optional). Number of cycles must be given with the -k argument Use only with Illumina data."))
 
@@ -26,18 +26,26 @@ fn main() {
         .help("k-mer size")
         .takes_value(true)
         .long("kmer_size")
-        .short("k"))
+        .short('k'))
+
+        .arg(Arg::with_name("nth")
+        .required(false)
+        .long("nth")
+        .short('n')
+        .takes_value(true)
+        .default_value("1")
+        .help("Calculate every nth record. Used to subsample large fastq files"))
         
         .arg(Arg::with_name("summary")
         .required(false)
         .long("summary")
-        .short("s")
+        .short('s')
         .takes_value(false)
         .help("display fastq file summary information at the end of the output (optional)"))
 
         .arg(Arg::with_name("valid")
         .long("valid")
-        .short("v")
+        .short('v')
         .required(false)
         .takes_value(false)
         .help("Remove k-mers with ambigous bases, e.g. only the ones containing ATGC are retained"))
@@ -46,13 +54,13 @@ fn main() {
         .conflicts_with("summary")
         .required(false)
         .long("json")
-        .short("j")
+        .short('j')
         .takes_value(false)
         .help("output data in json format (optional)"))
         
         .arg(Arg::with_name("query")
         .long("query")
-        .short("q")
+        .short('q')
         .conflicts_with("summary")
         .conflicts_with("freq")
         .required(false)
@@ -61,10 +69,10 @@ fn main() {
         
         .arg(Arg::with_name("freq")
         .long("freq")
-        .short("f")
+        .short('f')
         .required(false)
         .takes_value(false)
-        .help("Output a histogram of k-mer occurence, for building k-mer spectra, see https://en.wikipedia.org/wiki/K-mer (optional)"))
+        .help("Output a histogram of k-mer occurence, for building k-mer spectra. See https://en.wikipedia.org/wiki/K-mer (optional)"))
         
         .arg(Arg::with_name("INPUT")
         .help("Path to a fastq/fasta file")
@@ -76,21 +84,34 @@ fn main() {
     let infile = matches.value_of("INPUT").unwrap().to_string();
     let mut records = parse_path(infile).unwrap();
     let k = matches.value_of("kmer")
-    .unwrap()
-    .trim()
-    .parse::<usize>()
-    .expect("k-mer length argument not valid!");
+        .unwrap()
+        .trim()
+        .parse::<usize>()
+        .expect("k-mer length argument not valid!");
+
+    let nth = matches.value_of("nth")
+        .unwrap()
+        .trim()
+        .parse::<i32>()
+        .expect("nth argument not valid!");
     
     if !matches.is_present("cycle") {
 
     let  mut kmer_counts: HashMap<String,i32> = HashMap::new();
-    //let mut q_counts: HashMap<String,i32> = HashMap::new();
     
     let mut reads: i64 = 0;
     let mut kmers: i64 = 0;
+    let mut recn: i32 = 0;
     
     while let Some(record) = records.iter_record().unwrap() {
         reads += 1;
+        
+        recn += 1;
+        if recn != nth {
+            continue;
+        }
+        recn = 0;
+        
         let seq_str = record.seq();
         //let q_str = record.qual();
         
@@ -173,8 +194,15 @@ fn main() {
     } else if matches.is_present("cycle") {
         let  mut k_counts: HashMap<String,i32> = HashMap::new();
         let mut q_counts: HashMap<String,i32> = HashMap::new();
+        let mut recn: i32 = 0;
 
         while let Some(record) = records.iter_record().unwrap() {
+            
+            recn += 1;
+            if recn != nth {
+                continue;
+            }
+            recn = 0;
         
             let seq_str = record.seq();
             let q_str = record.qual();

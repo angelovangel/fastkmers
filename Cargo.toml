@@ -9,11 +9,11 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-clap = "~2.33.3"
+clap = "3.2.25"
 serde_json = "*"
 regex = "1"
 probminhash = "0.1.5"
-kseq = "0.5.2"
+kseq = "0.5.3"
 itertools = "0.10.3"
 rayon = "1.5"
 
