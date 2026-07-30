@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>fastkmers - PCA Interactive Plot</title>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <style>
+        :root {
+            --bg-color: #FFFFFF;
+            --panel-bg: #F8FAFC;
+            --text-color: #0F172A;
+            --text-muted: #64748B;
+        }
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+        }
+        header {
+            padding: 16px 24px;
+            background-color: var(--panel-bg);
+            border-bottom: 1px solid #E2E8F0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        h1 {
+            margin: 0;
+            font-size: 20px;
+            font-weight: 600;
+            color: #0284C7;
+        }
+        .meta {
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+        #chart-container {
+            flex: 1;
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div>
+            <h1>fastkmers — Interactive PCA Visualization</h1>
+            <div class="meta">Sample x K-mer normalized frequency matrix (8 samples, 25453739 unique k-mers)</div>
+        </div>
+        <div class="meta">Color gradient continuous by PC1 value</div>
+    </header>
+    <div id="chart-container"></div>
+
+    <script>
+        const chartDom = document.getElementById('chart-container');
+        const myChart = echarts.init(chartDom);
+
+        const option = {
+            backgroundColor: '#FFFFFF',
+            grid: {
+                top: '10%',
+                left: '8%',
+                right: '18%',
+                bottom: '12%',
+                containLabel: true
+            },
+            tooltip: {
+                trigger: 'item',
+                backgroundColor: '#FFFFFF',
+                borderColor: '#CBD5E1',
+                borderWidth: 1,
+                textStyle: { color: '#0F172A' },
+                extraCssText: 'box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);',
+                formatter: function (params) {
+                    const sampleName = params.value[3];
+                    const x = params.value[0].toFixed(4);
+                    const y = params.value[1].toFixed(4);
+                    const kmers = params.value[2].toLocaleString();
+                    return `
+                        <div style="font-weight:bold; color:#0284C7; margin-bottom:4px;">${sampleName}</div>
+                        <div><b>PC1:</b> ${x}</div>
+                        <div><b>PC2:</b> ${y}</div>
+                        <div><b>Unique K-mers:</b> ${kmers}</div>
+                    `;
+                }
+            },
+            visualMap: {
+                min: -0.004329457363825902,
+                max: 0.008275798578879683,
+                dimension: 0,
+                orient: 'vertical',
+                right: 20,
+                top: 'center',
+                text: ['High PC1', 'Low PC1'],
+                textStyle: { color: '#334155' },
+                calculable: true,
+                inRange: {
+                    color: ['#313695', '#4575b4', '#74add1', '#abd9e9', '#e0f3f8', '#fee090', '#fdae61', '#f46d43', '#d73027', '#a50026']
+                }
+            },
+            xAxis: {
+                name: 'PC1 ($71.38% var)',
+                nameLocation: 'middle',
+                nameGap: 30,
+                nameTextStyle: { color: '#475569', fontSize: 14, fontWeight: 'bold' },
+                axisLine: { lineStyle: { color: '#94A3B8' } },
+                splitLine: { lineStyle: { color: '#F1F5F9', type: 'dashed' } },
+                axisLabel: { color: '#475569' }
+            },
+            yAxis: {
+                name: 'PC2 ($17.83% var)',
+                nameLocation: 'middle',
+                nameGap: 40,
+                nameTextStyle: { color: '#475569', fontSize: 14, fontWeight: 'bold' },
+                axisLine: { lineStyle: { color: '#94A3B8' } },
+                splitLine: { lineStyle: { color: '#F1F5F9', type: 'dashed' } },
+                axisLabel: { color: '#475569' }
+            },
+            series: [{
+                type: 'scatter',
+                symbolSize: 18,
+                data: [
+  [
+    -0.0018871995724962427,
+    -0.0020195566371491217,
+    4807711,
+    "09_zymo6306_30cycles"
+  ],
+  [
+    0.008275798578879683,
+    0.000821732296293566,
+    2773838,
+    "10_zymo6311_30cycles"
+  ],
+  [
+    -0.0018179967134143327,
+    -0.002862623903329013,
+    5397555,
+    "11_zymo6322_30cycles"
+  ],
+  [
+    -0.0020883208133937246,
+    -0.0014080711652726995,
+    5762611,
+    "13_zymo6306_25cycles"
+  ],
+  [
+    0.008042944386963036,
+    0.0008477341735509779,
+    5056378,
+    "14_zymo6311_25cycles"
+  ],
+  [
+    -0.0019307603072580577,
+    -0.0024145474976604068,
+    4824636,
+    "15_zymo6322_25cycles"
+  ],
+  [
+    -0.004329457363825902,
+    0.003583941919098048,
+    2504200,
+    "zymo6306-16S-25cycles"
+  ],
+  [
+    -0.004265008195454348,
+    0.0034513908144686756,
+    3173231,
+    "zymo6306-16s-30cycles"
+  ]
+],
+                itemStyle: {
+                    shadowBlur: 4,
+                    shadowColor: 'rgba(0, 0, 0, 0.15)'
+                },
+                emphasis: {
+                    focus: 'none',
+                    scale: 1.5,
+                    itemStyle: {
+                        borderColor: '#0F172A',
+                        borderWidth: 2,
+                        shadowBlur: 10,
+                        shadowColor: 'rgba(0, 0, 0, 0.3)'
+                    }
+                }
+            }]
+        };
+
+        myChart.setOption(option);
+        window.addEventListener('resize', () => myChart.resize());
+    </script>
+</body>
+</html>
